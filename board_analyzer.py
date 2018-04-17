@@ -57,11 +57,14 @@ class BoardAnalyzer(object):
         else:
             self.data[x, y] = 2
 
+        # 돌을 놓음과 동시에 점수를 계산
         self.evaluate()
 
+        # 게임이 끝나지 않았을 경우 1턴 추가(1턴부터 시작이기 때문에 끝나면 올릴 필요 없음)
         if self.finished == False:
             self.turn += 1
 
+        # 반환값으로 종료 여부를 기대하는 조건문을 위해 게임 종료 여부 반환
         return self.finished
 
     def get_value(self, x, y):
@@ -77,7 +80,7 @@ class BoardAnalyzer(object):
         return self.finished
 
     def isNear(self, x, y):
-        dist = 1
+        dist = 2
         for t_x in range(x - dist, x + dist + 1):
             for t_y in range(y - dist, y + dist + 1):
                 if (self.get_value(t_x, t_y) == self.WHITE) or (self.get_value(t_x, t_y) == self.BLACK):
@@ -87,8 +90,7 @@ class BoardAnalyzer(object):
 
     def evaluate(self):
         '''
-        Args:
-            depth : 깊이에 따른 가중치를 둔다
+        현재 바둑판을 분석해 점수를 계산합니다
         '''
         # 0~5 연속된 돌의 개수, 0~2 막힌 방향 개수
         my_block_ary = np.zeros([6, 3], np.int8)
@@ -98,7 +100,7 @@ class BoardAnalyzer(object):
         x = 0
         y = 0
 
-        # Init Ary
+        # 배열 초기화(파이썬에서는 필요 없음)
         for i in range(0, 6):
             for j in range(0, 3):
                 my_block_ary[i][j] = 0
@@ -253,7 +255,7 @@ class BoardAnalyzer(object):
         value = 0
 
         if color != self.MY_COLOR:
-            color_weight = -1.5
+            color_weight = -0.9
 
         # --------------------------------------------------------------------
         # 연속돌 1개 + 1개 막힘
