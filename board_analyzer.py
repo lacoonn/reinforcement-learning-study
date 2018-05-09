@@ -22,6 +22,9 @@ class BoardAnalyzer(object):
             self.MY_COLOR = self.WHITE
             self.YOUR_COLOR = self.BLACK
 
+        self.moves_left = self.size ** 2
+        self.winner_value = 0.0 # not defined yet
+
     def get_size(self):
         return self.size
 
@@ -57,8 +60,16 @@ class BoardAnalyzer(object):
         else:
             self.data[x, y] = 2
 
+        '''
         # 돌을 놓음과 동시에 점수를 계산
         self.evaluate()
+        '''
+
+        # 게임 종료 여부 체크
+        self._check_if_finished_after_move(x, y, self.data[x, y])
+        # 게임이 끝나면 점수 계산
+        if self.finished == True:
+            self.evaluate()
 
         # 게임이 끝나지 않았을 경우 1턴 추가(1턴부터 시작이기 때문에 끝나면 올릴 필요 없음)
         if self.finished == False:
@@ -77,10 +88,75 @@ class BoardAnalyzer(object):
         return self.finished
 
     def check_finish_condition(self):
+        '''
+        미구현
+        '''
         return self.finished
 
+    def _check_if_finished_after_move(self, x, y, value):
+        if self.moves_left == 0:
+            self.finished = True
+
+        self._check_if_finished_vertically(x, y, value)
+        self._check_if_finished_horizontally(x, y, value)
+        self._check_if_finished_diagonals(x, y, value)
+
+    def _check_if_finished_vertically(self, x, y, value):
+        self._check_if_finished(x, y, value, 0, 1)
+
+    def _check_if_finished_horizontally(self, x, y, value):
+        self._check_if_finished(x, y, value, 1, 0)
+
+    def _check_if_finished_diagonals(self, x, y, value):
+        self._check_if_finished(x, y, value, 1, 1)
+        self._check_if_finished(x, y, value, 1, -1)
+
+    def _check_if_finished(self, x, y, value, xOffset, yOffset):
+        sameStonesLeft = 0
+        for i in range(1, 6):
+            xx = x - i * xOffset
+            yy = y - i * yOffset
+
+            if xx < 0 or xx >= self.size:
+                break
+
+            if yy < 0 or yy >= self.size:
+                break
+
+            if self.data[xx, yy] == 0.0:
+                break
+
+            if self.data[xx, yy] == value:
+                sameStonesLeft += 1
+            else:
+                break
+
+        sameStonesRight = 0
+        for i in range(1, 5):
+            xx = x + i * xOffset
+            yy = y + i * yOffset
+
+            if xx < 0 or xx >= self.size:
+                break
+
+            if yy < 0 or yy >= self.size:
+                break
+
+            if self.data[xx, yy] == 0.0:
+                break
+
+            if self.data[xx, yy] == value:
+                sameStonesRight += 1
+            else:
+                break
+
+        sameStones = sameStonesLeft + sameStonesRight + 1
+        if sameStones >= 5:
+            self.finished = True
+            self.winner_value = value
+
     def isNear(self, x, y):
-        dist = 2
+        dist = 1
         for t_x in range(x - dist, x + dist + 1):
             for t_y in range(y - dist, y + dist + 1):
                 if (self.get_value(t_x, t_y) == self.WHITE) or (self.get_value(t_x, t_y) == self.BLACK):
@@ -255,7 +331,7 @@ class BoardAnalyzer(object):
         value = 0
 
         if color != self.MY_COLOR:
-            color_weight = -0.9
+            color_weight = -1.1
 
         # --------------------------------------------------------------------
         # 연속돌 1개 + 1개 막힘

@@ -8,7 +8,7 @@ reward는 가장 멀리 예측한 board의 상태를 분석하여 얻음
 import copy
 from board_analyzer import BoardAnalyzer
 
-class Algo(object):    
+class MinimaxPlayer(object):
 	def __init__(self, depth):
 		'''
 		얼마나 깊이 볼 것인가!
@@ -44,6 +44,7 @@ class Algo(object):
 
 	def minimax(self, node, depth, alpha, beta, maximizing_player):
 		if depth == 0:
+			node.evaluate()
 			return -1, -1, node.eval
 
 		# Maximizing Player

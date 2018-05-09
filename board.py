@@ -2,11 +2,14 @@ import numpy as np
 
 class Board(object):
     def __init__(self):
-        self.size = 16
+        self.size = 10
         # 바둑판은 생성 시 0(EMPTY)로 초기화
         self.data = np.zeros([self.size, self.size], np.int8)
         self.finished = False
         self.turn = 1
+
+        self.last_x = -1
+        self.last_y = -1
 
         self.OUTBD = -1
         self.EMPTY = 0
@@ -28,13 +31,12 @@ class Board(object):
             for y in range(self.size):
                 if self.data[x, y] == self.EMPTY:
                     pic[x, y] = '_'
-                    #pic[x, y] = '□'
                 elif self.data[x, y] == self.BLACK:
-                    #pic[x, y] = 'x'
-                    pic[x, y] = '●'
+                    #pic[x, y] = '○'
+                    pic[x, y] = 'O'
                 elif self.data[x, y] == self.WHITE:
-                    #pic[x, y] = 'o'
-                    pic[x, y] = '○'
+                    #pic[x, y] = '●'
+                    pic[x, y] = 'H'
                 else:
                     pic[x, y] = 'N'
         # print(pic[0:5, 0:5])
@@ -56,6 +58,9 @@ class Board(object):
         else:
             self.data[x, y] = self.WHITE
 
+        self.last_x = x
+        self.last_y = y
+
         # 종료 여부 검사
         # self.check_finish_condition()
         self._check_if_finished_after_move(x, y, self.data[x, y])
@@ -74,6 +79,9 @@ class Board(object):
         return self.finished
 
     def check_finish_condition(self):
+        '''
+        미구현
+        '''
         return self.finished
 
     def _check_if_finished_after_move(self, x, y, value):
