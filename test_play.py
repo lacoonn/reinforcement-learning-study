@@ -12,23 +12,29 @@ import time
 
 '''
 def minimax_minimax():
-	player1 = MinimaxPlayer(3)
-	player2 = MinimaxPlayer(3)
+	player1 = MinimaxPlayer(2)
+	player2 = MinimaxPlayer(2)
 	env = Environment(player1, player2)
 	env.play_game_with_minimax()
+'''
 
 def qlearning_minimax():
 	player1 = OmokEnvironment(10)
-	player2 = MinimaxPlayer(3)
+	player2 = MinimaxPlayer(2)
 	env = Environment(player1, player2)
-	env.play_game_with_qlearning()
+	env.qlearning_vs_minimax()
+
+'''
+def qlearning_qlearning():
+	player1 = OmokEnvironment(10)
+	player2 = OmokEnvironment(10)
+	env = Environment(player1, player2)
+	env.qlearning_vs_qlearning()
 '''
 
 def main(_):
-	player1 = OmokEnvironment(10)
-	player2 = MinimaxPlayer(2)
-	env = Environment(player1, player2)
-	env.play_game_with_qlearning()
+	qlearning_minimax()
+
 
 
 if __name__ == '__main__':

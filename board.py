@@ -36,7 +36,7 @@ class Board(object):
                     pic[x, y] = 'O'
                 elif self.data[x, y] == self.WHITE:
                     #pic[x, y] = '●'
-                    pic[x, y] = 'H'
+                    pic[x, y] = 'X'
                 else:
                     pic[x, y] = 'N'
         # print(pic[0:5, 0:5])

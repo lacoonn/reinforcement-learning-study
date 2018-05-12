@@ -25,6 +25,7 @@ maxMemory = 500
 batchSize = 50
 epoch = 100
 epsilonStart = 1
+epsilon = 0.9
 epsilonDiscount = 0.999
 epsilonMinimumValue = 0.1
 discount = 0.9
@@ -302,7 +303,6 @@ class OmokEnvironment():
 # 리플레이 메모리 클래스
 #------------------------------------------------------------
 class ReplayMemory:
-
 	#--------------------------------
 	# 초기화
 	#--------------------------------
@@ -433,7 +433,7 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 		print(targets)
 		'''
 		if((i % 10 == 0) and (i != 0)):
-			save_path = saver.save(sess, os.getcwd() + "/OmokModel.ckpt")
+			save_path = saver.save(sess, os.getcwd() + "/savedata/OmokModel.ckpt")
 			print(("Model saved in file: %s" % save_path))
 
 	print(("Epoch " + str((iteration + 1) * epoch) + ", Error = " +
@@ -445,7 +445,6 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 # 메인 함수
 #------------------------------------------------------------
 def main(_):
-
 	# 환경 인스턴스 생성
 	env = OmokEnvironment(gridSize)
 
@@ -460,8 +459,8 @@ def main(_):
 	saver = tf.train.Saver()
 
 	# 모델 로드
-	if(os.path.isfile(os.getcwd() + "/OmokModel.ckpt.index") == True):
-		saver.restore(sess, os.getcwd() + "/OmokModel.ckpt")
+	if(os.path.isfile(os.getcwd() + "/savedata/OmokModel.ckpt.index") == True):
+		saver.restore(sess, os.getcwd() + "/savedata/OmokModel.ckpt")
 		print('Saved model is loaded!')
 	else:
 		print("Training new model")
