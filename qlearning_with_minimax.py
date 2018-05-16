@@ -150,9 +150,7 @@ def qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, itera
 			else :
 				winner = 2
 			
-			save_path = saver.save(sess, os.getcwd() + "/savedata/OmokModel.ckpt")
-			
-			return winner, save_path
+			return winner
 		
 		#time.sleep(1)
 #------------------------------------------------------------
@@ -184,7 +182,7 @@ def main(_):
 	while(True):
 		player1 = OmokEnvironment(10)
 		player2 = MinimaxPlayer(1)
-		result, save_path = qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, iteration)
+		result = qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, iteration)
 
 		# 승자 확인
 		if (result == 1):
@@ -200,6 +198,8 @@ def main(_):
 			#------------------------------------------------------------
 			# 최근 10판 승률
 			#------------------------------------------------------------
+			save_path = saver.save(sess, os.getcwd() + "/savedata/OmokModel.ckpt")
+
 			print("Iteration : " + str(iteration) + ", Win Rate : " + str(player1_wincount / (player1_wincount + player2_wincount) * 100))
 			print("Saved On " + save_path)
 			player1_wincount = 0
