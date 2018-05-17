@@ -18,7 +18,7 @@ import time
 class Env(object):
 	def __init__(self):
 		self.grid_size = 10
-		self.state_size = self.grid_size * self.grid_size		
+		self.state_size = self.grid_size * self.grid_size
 		# board는 object 내부에서 오목의 연산 처리용으로만 사용한다
 		self.board = Board(self.grid_size)
 		# object의 외부 api는 state를 통해서만 이루어진다
@@ -64,7 +64,7 @@ class Env(object):
 	#--------------------------------
 	def get_turn(self):
 		return self.board.turn
-	
+
 	#--------------------------------
 	# state에 action을 적용
 	#--------------------------------
@@ -111,7 +111,8 @@ class Env(object):
 	#--------------------------------
 	def is_gameover(self, player):
 		if self.board.turn >= self.state_size:
-			return True
+			#return True
+			return self.board.finished
 		else:
 			return self.board.finished
 
@@ -132,11 +133,19 @@ class Env(object):
 		y = int(action % self.grid_size)
 		if self.board.get_value(x, y) == 0:
 			next_state = self.update_state(player, action)
+			done = self.is_gameover(player)
+			if done == True:
+				reward = 1
+			else:
+				reward = 0
+			'''
 			analyzer = BoardAnalyzer()
 			reward = analyzer.get_score(self.board, player)
+			'''
 		else:
+			self.board.turn += 1
 			next_state = self.state
-			reward = -100000
-		done = self.is_gameover(player)
+			done = self.is_gameover(player)
+			reward = -1
 
 		return next_state, reward, done
