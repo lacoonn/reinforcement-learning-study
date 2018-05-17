@@ -1,5 +1,6 @@
 '''
-강화학습 Q-Learning을 사용한 오목 AI
+강화학습 Q-Learning + MCTS 오목 AI
+MCTS의 구체적인 적용 방법을 몰라서 Heuristic으로 점수 계산을 추가함
 '''
 
 import tensorflow as tf
@@ -25,7 +26,6 @@ maxMemory = 500
 batchSize = 50
 epoch = 100
 epsilonStart = 1
-epsilon = 0.9
 epsilonDiscount = 0.999
 epsilonMinimumValue = 0.1
 discount = 0.9
@@ -70,8 +70,7 @@ def randf(s, e):
 #------------------------------------------------------------
 # 오목 환경 클래스
 #------------------------------------------------------------
-class OmokEnvironment():
-
+class QLearningPlayer():
 	#--------------------------------
 	# 초기화
 	#--------------------------------
@@ -110,7 +109,6 @@ class OmokEnvironment():
 	# 리워드 구함
 	#--------------------------------
 	def GetReward(self, player, action):
-
 		# 왼쪽 검사
 		if(action % self.gridSize > 0):
 			if(self.state[action - 1] == player):
@@ -446,7 +444,7 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 #------------------------------------------------------------
 def main(_):
 	# 환경 인스턴스 생성
-	env = OmokEnvironment(gridSize)
+	env = QLearningPlayer(gridSize)
 
 	# 리플레이 메모리 인스턴스 생성
 	memory = ReplayMemory(gridSize, maxMemory, discount)

@@ -1,6 +1,6 @@
 from environment import Environment
 from minimax_player import MinimaxPlayer
-from qlearning_player import OmokEnvironment, X, W1, b1, input_layer, W2, b2, hidden_layer, W3, b3, output_layer, Y, cost, optimizer
+from qlearning_player import QLearningPlayer, X, W1, b1, input_layer, W2, b2, hidden_layer, W3, b3, output_layer, Y, cost, optimizer
 import tensorflow as tf
 import numpy as np
 import random
@@ -19,15 +19,15 @@ def minimax_minimax():
 '''
 
 def qlearning_minimax():
-	player1 = OmokEnvironment(10)
+	player1 = QLearningPlayer(10)
 	player2 = MinimaxPlayer(2)
 	env = Environment(player1, player2)
 	env.qlearning_vs_minimax()
 
 '''
 def qlearning_qlearning():
-	player1 = OmokEnvironment(10)
-	player2 = OmokEnvironment(10)
+	player1 = QLearningPlayer(10)
+	player2 = QLearningPlayer(10)
 	env = Environment(player1, player2)
 	env.qlearning_vs_qlearning()
 '''

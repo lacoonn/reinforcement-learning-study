@@ -1,5 +1,5 @@
 '''
-강화학습 Q-Learning을 사용한 오목 AI
+강화학습 Q-Learning 오목 AI
 '''
 
 import tensorflow as tf
@@ -69,8 +69,7 @@ def randf(s, e):
 #------------------------------------------------------------
 # 오목 환경 클래스
 #------------------------------------------------------------
-class OmokEnvironment():
-
+class QLearningPlayer():
 	#--------------------------------
 	# 초기화
 	#--------------------------------
@@ -109,7 +108,6 @@ class OmokEnvironment():
 	# 리워드 구함
 	#--------------------------------
 	def GetReward(self, player, action):
-
 		# 왼쪽 검사
 		if(action % self.gridSize > 0):
 			if(self.state[action - 1] == player):
@@ -302,7 +300,6 @@ class OmokEnvironment():
 # 리플레이 메모리 클래스
 #------------------------------------------------------------
 class ReplayMemory:
-
 	#--------------------------------
 	# 초기화
 	#--------------------------------
@@ -373,7 +370,6 @@ class ReplayMemory:
 # 게임 플레이 함수
 #------------------------------------------------------------
 def playGame(env, memory, sess, saver, epsilon, iteration):
-
 	#--------------------------------
 	# 게임 반복
 	#--------------------------------
@@ -433,7 +429,7 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 		print(targets)
 		'''
 		if((i % 10 == 0) and (i != 0)):
-			save_path = saver.save(sess, os.getcwd() + "/OmokModel.ckpt")
+			save_path = saver.save(sess, os.getcwd() + "/savedata/OmokModel.ckpt")
 			print(("Model saved in file: %s" % save_path))
 
 	print(("Epoch " + str((iteration + 1) * epoch) + ", Error = " +
@@ -445,9 +441,8 @@ def playGame(env, memory, sess, saver, epsilon, iteration):
 # 메인 함수
 #------------------------------------------------------------
 def main(_):
-
 	# 환경 인스턴스 생성
-	env = OmokEnvironment(gridSize)
+	env = QLearningPlayer(gridSize)
 
 	# 리플레이 메모리 인스턴스 생성
 	memory = ReplayMemory(gridSize, maxMemory, discount)
@@ -460,8 +455,8 @@ def main(_):
 	saver = tf.train.Saver()
 
 	# 모델 로드
-	if(os.path.isfile(os.getcwd() + "/OmokModel.ckpt.index") == True):
-		saver.restore(sess, os.getcwd() + "/OmokModel.ckpt")
+	if(os.path.isfile(os.getcwd() + "/savedata/OmokModel.ckpt.index") == True):
+		saver.restore(sess, os.getcwd() + "/savedata/OmokModel.ckpt")
 		print('Saved model is loaded!')
 	else:
 		print("Training new model")

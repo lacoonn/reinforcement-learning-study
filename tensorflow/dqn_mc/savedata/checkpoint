@@ -1,0 +1,2 @@
+model_checkpoint_path: "C:\\Users\\woochan\\Dropbox\\Project\\gomoku-ai-battle\\tensorflow\\dqn_mc/savedata/OmokModel.ckpt"
+all_model_checkpoint_paths: "C:\\Users\\woochan\\Dropbox\\Project\\gomoku-ai-battle\\tensorflow\\dqn_mc/savedata/OmokModel.ckpt"

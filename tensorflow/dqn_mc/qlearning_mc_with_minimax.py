@@ -1,7 +1,12 @@
+'''
+Q-Learning + MCTS vs Minimax를 통해서 학습
+MCTS의 구체적인 적용 방법을 몰라서 Heuristic으로 점수 계산을 추가함
+'''
+
 from board import Board
-from qlearning_player import OmokEnvironment, ReplayMemory
+from qlearning_mc_player import QLearningPlayer, ReplayMemory
 from minimax_player import MinimaxPlayer
-#from qlearning_player import OmokEnvironment, X, W1, b1, input_layer, W2, b2, hidden_layer, W3, b3, output_layer, Y, cost, optimizer, epsilon
+from board_analyzer import BoardAnalyzer
 import tensorflow as tf
 import numpy as np
 import random
@@ -25,13 +30,13 @@ hiddenSize = 100
 maxMemory = 500
 batchSize = 50
 epoch = 100
-#epsilon = 1
-epsilon = 0.8
+epsilon = 1
 epsilonDiscount = 0.999
 epsilonMinimumValue = 0.1
 discount = 0.9
-learningRate = 0.2
-winReward = 1
+learningRate = 0.01
+#winReward = 1
+winReward = 100000
 #------------------------------------------------------------
 
 #------------------------------------------------------------
@@ -68,10 +73,10 @@ def randf(s, e):
 #------------------------------------------------------------
 # qlearning with minimax
 #------------------------------------------------------------
-def qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, iteration):
-	board = Board()
+def qlearning_with_minimax(board, player1, player2, memory, sess, saver, epsilon, iteration):
 	player1.reset()
 	err = 0
+	total_score = 0
 	gameOver = False
 	currentPlayer = STONE_PLAYER1
 
@@ -100,7 +105,7 @@ def qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, itera
 
 			if (epsilon > epsilonMinimumValue):
 				epsilon = epsilon * epsilonDiscount
-			
+
 			nextState, reward, gameOver = player1.act(currentPlayer, action)
 
 			'''
@@ -115,6 +120,18 @@ def qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, itera
 			x = action % board.size
 			board.put_value(x, y)
 
+			#------------------------------------------------------------
+			# Reward에 Heuristic으로 점수 계산을 적용
+			#------------------------------------------------------------
+			analyzer = BoardAnalyzer()
+			reward = analyzer.get_score(board, 1)
+			total_score += reward
+
+			#--------------------------------
+			# action 기억
+			#--------------------------------
+			memory.remember(currentState, action, reward, nextState, gameOver)
+
 			#--------------------------------
 			# 학습 수행
 			#--------------------------------
@@ -124,6 +141,7 @@ def qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, itera
 
 			_, loss = sess.run([optimizer, cost], feed_dict={X: inputs, Y: targets})
 			err = err + loss
+
 		#------------------------------------------------------------
 		# 짝수 턴(minimax player) - White
 		#------------------------------------------------------------
@@ -145,12 +163,14 @@ def qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, itera
 		#board.draw()
 
 		if (board.finished == True) :
+			print("Episode : {0:5d}, End Turn : {1:3d}, Score : {2:0.1f}, Loss : {3:0.1f}".format(iteration, board.turn, total_score / board.turn, err))
+			
 			if (board.turn % 2 == 1) :
 				winner = 1
 			else :
 				winner = 2
 			
-			return winner
+			return winner, epsilon
 		
 		#time.sleep(1)
 #------------------------------------------------------------
@@ -177,12 +197,14 @@ def main(_):
 	iteration = 0
 	player1_wincount = 0
 	player2_wincount = 0
+	epsilon = 1	
 
 	# 게임 플레이
 	while(True):
-		player1 = OmokEnvironment(10)
+		board = Board()
+		player1 = QLearningPlayer(10)
 		player2 = MinimaxPlayer(1)
-		result = qlearning_with_minimax(player1, player2, memory, sess, saver, epsilon, iteration)
+		result, epsilon = qlearning_with_minimax(board, player1, player2, memory, sess, saver, epsilon, iteration)
 
 		# 승자 확인
 		if (result == 1):
@@ -194,14 +216,17 @@ def main(_):
 		
 		iteration += 1
 
-		if (iteration % 10 == 0):
+		if (iteration % 25 == 0):
 			#------------------------------------------------------------
 			# 최근 10판 승률
 			#------------------------------------------------------------
 			save_path = saver.save(sess, os.getcwd() + "/savedata/OmokModel.ckpt")
-
-			print("Iteration : " + str(iteration) + ", Win Rate : " + str(player1_wincount / (player1_wincount + player2_wincount) * 100))
+			
+			print()
+			print("Episode : " + str(iteration) + ", Win Rate : " + str(player1_wincount / (player1_wincount + player2_wincount) * 100) + ", epsilon : " + str(epsilon))
 			print("Saved On " + save_path)
+			print()
+			
 			player1_wincount = 0
 			player2_wincount = 0
 	
