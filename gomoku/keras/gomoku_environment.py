@@ -131,6 +131,7 @@ class Env(object):
 		'''
 		x = int(action / self.grid_size)
 		y = int(action % self.grid_size)
+		# 빈 곳에 돌을 놓으면 정상 실행
 		if self.board.get_value(x, y) == 0:
 			next_state = self.update_state(player, action)
 			done = self.is_gameover(player)
@@ -142,10 +143,11 @@ class Env(object):
 			analyzer = BoardAnalyzer()
 			reward = analyzer.get_score(self.board, player)
 			'''
+		# 이미 돌이 있는 곳에 돌을 놓으면 -1 점수를 받고 종료
 		else:
 			self.board.turn += 1
 			next_state = self.state
-			done = self.is_gameover(player)
+			done = True
 			reward = -1
 
 		return next_state, reward, done

@@ -26,7 +26,7 @@ class DqnAgent:
 		self.learning_rate = 0.001
 
 		self.epsilon = 1.  # exploration
-		self.epsilon_decay = .99999
+		self.epsilon_decay = .999999
 		self.epsilon_min = 0.1
 		self.model = self.build_model()
 
@@ -195,16 +195,16 @@ def dqn():
 				env.inverse()
 
 		# 100 에피소드마다 모델 저장
-		if e % 25 == 0:
+		if e % 100 == 0:
 			player.model.save_weights(player.model_path)
 			print("Model is saved !")
 			print()
-			#time.sleep(1)
+			time.sleep(0.5)
 # [END] dqn
 
 # [START] dqn vs dqn
 def dqn_vs_dqn():
-	PRINT_FLAG = False
+	PRINT_FLAG = True
 	BLACK = 1
 	WHITE = 2
 	# 환경과 에이전트 생성
@@ -255,7 +255,7 @@ def dqn_vs_dqn():
 				if PRINT_FLAG:
 					print(env.get_turn(), " : player1")
 					env.draw_board()
-					time.sleep(0.5)
+					#time.sleep(0.5)
 
 			# 짝수 턴(minimax player) - White
 			else:
@@ -285,10 +285,14 @@ def dqn_vs_dqn():
 				if PRINT_FLAG:
 					print(env.get_turn(), " : player2")
 					env.draw_board()
-					time.sleep(0.5)
+					#time.sleep(0.5)
 
 			if done:
 				# 에피소드마다 학습 결과 출력
+				print("BLACK ==> episode : {0}, global_step : {1}, end_turn : {2}, score : {3:0.1f}, epsilon : {4:0.1f}".format(e, global_step, env.get_turn(), score1, player1.epsilon))
+				print("WHITE ==> episode : {0}, global_step : {1}, end_turn : {2}, score : {3:0.1f}, epsilon : {4:0.1f}".format(e, global_step, env.get_turn(), score2, player2.epsilon))
+				print()
+				# 그래프 출력
 				'''
 				scores1.append(score1)
 				scores2.append(score2)
@@ -296,10 +300,6 @@ def dqn_vs_dqn():
 				player1.save_graph(1, episodes, scores1, 'r')
 				player2.save_graph(2, episodes, scores2, 'b')
 				'''
-				print("BLACK ==> episode : {0}, global_step : {1}, end_turn : {2}, score : {3:0.1f}, epsilon : {4:0.1f}".format(e, global_step, env.get_turn(), score1, player1.epsilon))
-				print("WHITE ==> episode : {0}, global_step : {1}, end_turn : {2}, score : {3:0.1f}, epsilon : {4:0.1f}".format(e, global_step, env.get_turn(), score2, player2.epsilon))
-				print()
-				#time.sleep(1)
 			else:
 				if current_player == BLACK:
 					current_player = WHITE
@@ -307,13 +307,13 @@ def dqn_vs_dqn():
 					current_player = BLACK
 				env.inverse()
 
-		# 25 에피소드마다 모델 저장
-		if e % 25 == 0:
+		# 기준 에피소드마다 모델 저장
+		if e % 100 == 0:
 			player1.save_model()
 			player2.save_model()
 			print("Model is saved !")
 			print()
-			#time.sleep(1)
+			time.sleep(0.5)
 # [END] dqn vs dqn
 
 # [START] dqn vs miniamx
