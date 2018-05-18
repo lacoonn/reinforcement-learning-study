@@ -33,10 +33,10 @@ class DqnAgent:
 		self.model_path = model_path
 		self.graph_path = graph_path
 
-		print()
+		print(os.getcwd() + self.model_path)
 		if (os.path.isfile(os.getcwd() + self.model_path) == True):
 			self.epsilon = epsilon
-			self.model.load_weights(self.model_path)
+			self.model.load_weights('.' + self.model_path)
 			print("Saved model is loaded !")
 		else:
 			print("Train new model !")
@@ -56,13 +56,13 @@ class DqnAgent:
 	
 	# 모델 저장
 	def save_model(self):
-		self.model.save_weights(self.model_path)
+		self.model.save_weights('.' + self.model_path)
 
 	# 그래프 저장
 	def save_graph(self, figure_num, episodes, scores, option):
 		pylab.figure(figure_num)
 		pylab.plot(episodes, scores, option)
-		pylab.savefig(self.graph_path)
+		pylab.savefig('.' + self.graph_path)
 
 
 	# 입실론 탐욕 방법으로 행동 선택
@@ -204,13 +204,13 @@ def dqn():
 
 # [START] dqn vs dqn
 def dqn_vs_dqn():
-	PRINT_FLAG = True
+	PRINT_FLAG = False
 	BLACK = 1
 	WHITE = 2
 	# 환경과 에이전트 생성
 	env = Env()
-	player1 = DqnAgent('./save_model/dqn.h5', './save_graph/dqn.png', 1)
-	player2 = DqnAgent('./save_model/dqn2.h5', './save_graph/dqn2.png', 1)
+	player1 = DqnAgent('/save_model/dqn.h5', '/save_graph/dqn.png', 1)
+	player2 = DqnAgent('/save_model/dqn2.h5', '/save_graph/dqn2.png', 1)
 
 	current_player = BLACK
 	global_step = 0
