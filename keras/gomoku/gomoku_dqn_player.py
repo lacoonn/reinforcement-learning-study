@@ -26,7 +26,7 @@ class DqnAgent:
 		self.learning_rate = 0.001
 
 		self.epsilon = 1.  # exploration
-		self.epsilon_decay = .999999
+		self.epsilon_decay = .99999
 		self.epsilon_min = 0.1
 		self.model = self.build_model()
 
@@ -289,12 +289,13 @@ def dqn_vs_dqn():
 
 			if done:
 				# 에피소드마다 학습 결과 출력
+				'''
 				scores1.append(score1)
 				scores2.append(score2)
 				episodes.append(e)
 				player1.save_graph(1, episodes, scores1, 'r')
 				player2.save_graph(2, episodes, scores2, 'b')
-				#print("episode : ", e, ", score : ", score, ", global_step : ", global_step, ", end_turn : ", env.get_turn(), ", epsilon : ", player1.epsilon)
+				'''
 				print("BLACK ==> episode : {0}, global_step : {1}, end_turn : {2}, score : {3:0.1f}, epsilon : {4:0.1f}".format(e, global_step, env.get_turn(), score1, player1.epsilon))
 				print("WHITE ==> episode : {0}, global_step : {1}, end_turn : {2}, score : {3:0.1f}, epsilon : {4:0.1f}".format(e, global_step, env.get_turn(), score2, player2.epsilon))
 				print()
@@ -312,7 +313,7 @@ def dqn_vs_dqn():
 			player2.save_model()
 			print("Model is saved !")
 			print()
-			time.sleep(1)
+			#time.sleep(1)
 # [END] dqn vs dqn
 
 # [START] dqn vs miniamx
