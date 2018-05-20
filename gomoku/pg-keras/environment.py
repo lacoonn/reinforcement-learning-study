@@ -133,19 +133,30 @@ class Env(object):
 		if self.board.get_value(x, y) == 0:
 			next_state = self.update_state(player, action)
 			done = self.is_gameover(player)
+			# 승부가 결정난 경우
 			if done == True:
-				reward = 1
+				reward = 100 / self.get_turn()
+			# 승부가 결정나지 않은 경우
 			else:
-				reward = 0
-			'''
-			analyzer = BoardAnalyzer()
-			reward = analyzer.get_score(self.board, player)
-			'''
+				# 빈 곳 체크
+				empty_space = 0
+				for i in range(100):
+					if self.state[i] == 0:
+						empty_space += 1
+				# 빈 곳이 없으면 게임 종료
+				if empty_space == 0:
+					done = True
+				# 빈 곳이 있으면
+				else:
+					if self.board.is_near(1, x, y):
+						reward = 0.1
+					else:
+						reward = 0.0
 		# 이미 돌이 있는 곳에 돌을 놓으면 -1 점수를 받고 종료
 		else:
 			self.board.turn += 1
 			next_state = self.state
-			done = True
+			done = False
 			reward = -1
 
 		return next_state, reward, done

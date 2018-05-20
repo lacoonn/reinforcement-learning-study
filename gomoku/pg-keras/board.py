@@ -4,149 +4,153 @@
 import numpy as np
 
 class Board(object):
-    def __init__(self, size):
-        self.size = size
-        # 바둑판은 생성 시 0(EMPTY)로 초기화
-        self.data = np.zeros([self.size, self.size], np.int8)
-        self.finished = False
-        self.turn = 1
+	def __init__(self, size):
+		self.size = size
+		# 바둑판은 생성 시 0(EMPTY)로 초기화
+		self.data = np.zeros([self.size, self.size], np.int8)
+		self.finished = False
+		self.turn = 1
 
-        self.last_x = -1
-        self.last_y = -1
+		self.last_x = -1
+		self.last_y = -1
 
-        self.OUTBD = -1
-        self.EMPTY = 0
-        self.BLACK = 1
-        self.WHITE = 2
+		self.OUTBD = -1
+		self.EMPTY = 0
+		self.BLACK = 1
+		self.WHITE = 2
 
-        self.moves_left = self.size ** 2
-        self.winner_value = 0.0 # not defined yet
+		self.moves_left = self.size ** 2
+		self.winner_value = 0.0 # not defined yet
 
-    def get_size(self):
-        return self.size
+	def get_size(self):
+		return self.size
 
-    def get_turn(self):
-        return self.turn
+	def get_turn(self):
+		return self.turn
 
-    def draw(self):
-        pic = np.chararray([self.size, self.size], itemsize=5, unicode=True)
-        for x in range(self.size):
-            for y in range(self.size):
-                if self.data[x, y] == self.EMPTY:
-                    pic[x, y] = '_'
-                elif self.data[x, y] == self.BLACK:
-                    #pic[x, y] = '○'
-                    pic[x, y] = 'O'
-                elif self.data[x, y] == self.WHITE:
-                    #pic[x, y] = '●'
-                    pic[x, y] = 'X'
-                else:
-                    pic[x, y] = 'N'
-        print(pic)
+	def draw(self):
+		pic = np.chararray([self.size, self.size], itemsize=5, unicode=True)
+		for x in range(self.size):
+			for y in range(self.size):
+				if self.data[x, y] == self.EMPTY:
+					pic[x, y] = '_'
+				elif self.data[x, y] == self.BLACK:
+					#pic[x, y] = '○'
+					pic[x, y] = 'O'
+				elif self.data[x, y] == self.WHITE:
+					#pic[x, y] = '●'
+					pic[x, y] = 'X'
+				else:
+					pic[x, y] = 'N'
+		print(pic)
 
-    def inverse(self):
-        for x in range(self.size):
-            for y in range(self.size):
-                if self.data[x, y] == self.BLACK:
-                    self.data[x, y] = self.WHITE
-                elif self.data[x, y] == self.WHITE:
-                    self.data[x, y] = self.BLACK
+	def inverse(self):
+		for x in range(self.size):
+			for y in range(self.size):
+				if self.data[x, y] == self.BLACK:
+					self.data[x, y] = self.WHITE
+				elif self.data[x, y] == self.WHITE:
+					self.data[x, y] = self.BLACK
 
-    def put_value(self, player, x, y):
-        if player == 0:
-            # 홀수턴(1턴)일 경우 흑돌
-            if self.turn % 2 == 1:
-                self.data[x, y] = self.BLACK
-            # 짝수턴(2턴)일 경우 백돌
-            else:
-                self.data[x, y] = self.WHITE
-        else:
-            self.data[x, y] = player
+	def put_value(self, player, x, y):
+		if player == 0:
+			# 홀수턴(1턴)일 경우 흑돌
+			if self.turn % 2 == 1:
+				self.data[x, y] = self.BLACK
+			# 짝수턴(2턴)일 경우 백돌
+			else:
+				self.data[x, y] = self.WHITE
+		else:
+			self.data[x, y] = player
 
-        self.last_x = x
-        self.last_y = y
+		self.last_x = x
+		self.last_y = y
 
-        # 종료 여부 검사
-        # self.check_finish_condition()
-        self._check_if_finished_after_move(x, y, self.data[x, y])
-        
-        # 종료되지 않을 경우에만 턴을 추가(1턴부터 시작이기 때문)
-        if self.finished == False:
-            self.turn += 1
-        
-        # 반환값으로 종료 여부를 기대하는 조건문을 위해 종료 여부 반환
-        return self.finished
+		# 종료 여부 검사
+		# self.check_finish_condition()
+		self._check_if_finished_after_move(x, y, self.data[x, y])
 
-    def get_value(self, x, y):
-        return self.data[x, y]
+		# 종료되지 않을 경우에만 턴을 추가(1턴부터 시작이기 때문)
+		if self.finished == False:
+			self.turn += 1
 
-    def is_finished(self):
-        return self.finished
+		# 반환값으로 종료 여부를 기대하는 조건문을 위해 종료 여부 반환
+		return self.finished
 
-    def check_finish_condition(self):
-        '''
-        미구현
-        '''
-        return self.finished
+	def get_value(self, x, y):
+		if 0 <= x < self.size and 0 <= y < self.size:
+			return self.data[x, y]
+		else:
+			return self.OUTBD
 
-    def _check_if_finished_after_move(self, x, y, value):
-        if self.moves_left == 0:
-            self.finished = True
+	def is_finished(self):
+		return self.finished
 
-        self._check_if_finished_vertically(x, y, value)
-        self._check_if_finished_horizontally(x, y, value)
-        self._check_if_finished_diagonals(x, y, value)
+	def is_near(self, dist, x, y):
+		for t_x in range(x - dist, x + dist + 1):
+			for t_y in range(y - dist, y + dist + 1):
+				if (self.get_value(t_x, t_y) == self.WHITE) or (self.get_value(t_x, t_y) == self.BLACK):
+					return True
+		return False
 
-    def _check_if_finished_vertically(self, x, y, value):
-        self._check_if_finished(x, y, value, 0, 1)
+	def _check_if_finished_after_move(self, x, y, value):
+		if self.moves_left == 0:
+			self.finished = True
 
-    def _check_if_finished_horizontally(self, x, y, value):
-        self._check_if_finished(x, y, value, 1, 0)
+		self._check_if_finished_vertically(x, y, value)
+		self._check_if_finished_horizontally(x, y, value)
+		self._check_if_finished_diagonals(x, y, value)
 
-    def _check_if_finished_diagonals(self, x, y, value):
-        self._check_if_finished(x, y, value, 1, 1)
-        self._check_if_finished(x, y, value, 1, -1)
+	def _check_if_finished_vertically(self, x, y, value):
+		self._check_if_finished(x, y, value, 0, 1)
 
-    def _check_if_finished(self, x, y, value, xOffset, yOffset):
-        sameStonesLeft = 0
-        for i in range(1, 6):
-            xx = x - i * xOffset
-            yy = y - i * yOffset
+	def _check_if_finished_horizontally(self, x, y, value):
+		self._check_if_finished(x, y, value, 1, 0)
 
-            if xx < 0 or xx >= self.size:
-                break
+	def _check_if_finished_diagonals(self, x, y, value):
+		self._check_if_finished(x, y, value, 1, 1)
+		self._check_if_finished(x, y, value, 1, -1)
 
-            if yy < 0 or yy >= self.size:
-                break
+	def _check_if_finished(self, x, y, value, xOffset, yOffset):
+		sameStonesLeft = 0
+		for i in range(1, 6):
+			xx = x - i * xOffset
+			yy = y - i * yOffset
 
-            if self.data[xx, yy] == 0.0:
-                break
+			if xx < 0 or xx >= self.size:
+				break
 
-            if self.data[xx, yy] == value:
-                sameStonesLeft += 1
-            else:
-                break
+			if yy < 0 or yy >= self.size:
+				break
 
-        sameStonesRight = 0
-        for i in range(1, 5):
-            xx = x + i * xOffset
-            yy = y + i * yOffset
+			if self.data[xx, yy] == 0.0:
+				break
 
-            if xx < 0 or xx >= self.size:
-                break
+			if self.data[xx, yy] == value:
+				sameStonesLeft += 1
+			else:
+				break
 
-            if yy < 0 or yy >= self.size:
-                break
+		sameStonesRight = 0
+		for i in range(1, 5):
+			xx = x + i * xOffset
+			yy = y + i * yOffset
 
-            if self.data[xx, yy] == 0.0:
-                break
+			if xx < 0 or xx >= self.size:
+				break
 
-            if self.data[xx, yy] == value:
-                sameStonesRight += 1
-            else:
-                break
+			if yy < 0 or yy >= self.size:
+				break
 
-        sameStones = sameStonesLeft + sameStonesRight + 1
-        if sameStones >= 5:
-            self.finished = True
-            self.winner_value = value
+			if self.data[xx, yy] == 0.0:
+				break
+
+			if self.data[xx, yy] == value:
+				sameStonesRight += 1
+			else:
+				break
+
+		sameStones = sameStonesLeft + sameStonesRight + 1
+		if sameStones >= 5:
+			self.finished = True
+			self.winner_value = value

@@ -1,5 +1,6 @@
 import copy
 import pylab
+import time
 import numpy as np
 from environment import Env
 from keras.layers import Dense
@@ -96,6 +97,8 @@ class ReinforceAgent:
 
 
 if __name__ == "__main__":
+	# 출력
+	PRINT = True
 	# 환경과 에이전트의 생성
 	env = Env()
 	agent = ReinforceAgent()
@@ -117,10 +120,12 @@ if __name__ == "__main__":
 			# 선택한 행동으로 환경에서 한 타임스탭 진행 후 샘플 수집
 			next_state, reward, done = env.step(action)
 			next_state = np.reshape(next_state, [1, 15])
-			#print("Action : ", action)
-			#print("Reward : ", reward)
-			#print("Next State : ", next_state)
-			#print()
+			if PRINT:
+				print("State : ", state)
+				print("Action : ", action)
+				print("Reward : ", reward)
+				print()
+				time.sleep(0.5)
 			agent.append_sample(state, action, reward)
 			score += reward
 			state = copy.deepcopy(next_state)

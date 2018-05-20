@@ -1,3 +1,7 @@
-﻿win : 1
+﻿win reward = 100 / turn
+tie = 0
 existed : -1
+
 빈 곳에만 돌을 놓을 수 있게 제한
+학습 10000번
+이론상 최대 reward = 10

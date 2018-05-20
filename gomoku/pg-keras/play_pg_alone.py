@@ -7,7 +7,7 @@ import pylab
 import time
 import numpy as np
 from environment import Env
-from pg_player import PgAgent
+from pg_agent import PgAgent
 
 EPISODES = 1000000
 
@@ -15,7 +15,7 @@ EPISODES = 1000000
 if __name__ == "__main__":
 	# 설정 파라미터
 	MODEL_LOAD = True
-	PRINT_FLAG = True
+	PRINT_FLAG = False
 	BLACK = 1
 	WHITE = 2
 	# 환경과 에이전트 생성
@@ -24,9 +24,7 @@ if __name__ == "__main__":
 	# 모델 로드
 	if MODEL_LOAD:
 		player.load_model()
-		print("Model Loaded ...")
-		print()
-		time.sleep(0.5)
+		time.sleep(1)
 	# 현재 플레이어
 	current_player = BLACK
 
@@ -64,6 +62,7 @@ if __name__ == "__main__":
 
 				if PRINT_FLAG:
 					# board 출력
+					print("Episode : {0}, Turn : {1}, PLAYER1".format(e, env.get_turn()))
 					env.draw_board()
 					print()
 					time.sleep(1)
@@ -88,6 +87,7 @@ if __name__ == "__main__":
 
 				if PRINT_FLAG:
 					# board 출력
+					print("Episode : {0}, Turn : {1}, PLAYER2".format(e, env.get_turn()))
 					env.draw_board()
 					print()
 					time.sleep(1)
@@ -98,6 +98,7 @@ if __name__ == "__main__":
 				scores.append(score)
 				episodes.append(e)
 				score = round(score, 2)
+				# 에피소드마다 결과 출력
 				print("episode : {0}, global_step : {1}, end_turn : {2}, score : {3:0.1f}".format(e, global_step, env.get_turn(), score))
 				print()
 				if PRINT_FLAG:
@@ -110,10 +111,10 @@ if __name__ == "__main__":
 				env.inverse()
 
 		# 100 에피소드마다 모델 저장
-		if e % 100 == 0:
-			player.save_graph(episodes, scores)
+		if e > 0 and e % 100 == 0:
 			player.save_model()
 			print("Model Saved ...")
 			print()
+			player.save_graph(episodes, scores)
 			time.sleep(1)
 # [END] pg alone
