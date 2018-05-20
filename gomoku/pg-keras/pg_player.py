@@ -1,23 +1,23 @@
+'''
+Policy Gradient Player
+'''
+
 import copy
 import pylab
 import numpy as np
-from environment import Env
 from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.models import Sequential
 from keras import backend as K
 
-EPISODES = 1000000
-
-# 그리드월드 예제에서의 REINFORCE 에이전트
-class ReinforceAgent:
+# 오목에서의 Policy Gradient 에이전트
+class PgAgent:
 	def __init__(self):
-		self.load_model = False
 		# 가능한 모든 행동 정의
-		self.action_space = [0, 1, 2, 3, 4]
+		self.action_space = list(range(100))
 		# 상태와 행동의 크기 정의
 		self.action_size = len(self.action_space)
-		self.state_size = 15
+		self.state_size = 100
 		self.discount_factor = 0.99
 		self.learning_rate = 0.001
 
@@ -25,21 +25,32 @@ class ReinforceAgent:
 		self.optimizer = self.build_optimizer()
 		self.states, self.actions, self.rewards = [], [], []
 
-		if self.load_model:
-			self.model.load_weights('./save_model/reinforce.h5')
-
 	# 상태가 입력, 각 행동의 확률이 출력인 인공신경망 생성
 	def build_model(self):
 		model = Sequential()
-		model.add(Dense(24, input_dim=self.state_size, activation='relu'))
-		model.add(Dense(24, activation='relu'))
+		model.add(Dense(150, input_dim=self.state_size, activation='relu'))
+		model.add(Dense(150, activation='relu'))
 		model.add(Dense(self.action_size, activation='softmax'))
 		model.summary()
 		return model
 
+	# 모델 저장
+	def save_model(self, filepath = './save_model/pg.h5'):
+		self.model.save_weights(filepath)
+
+	# 모델 로드
+	def load_model(self, filepath = './save_model/pg.h5'):
+		self.model.save_weights(filepath)
+
+	# 그래프 저장
+	def save_graph(self, episodes, scores, figure = 0, option = 'b', filepath = './save_graph/pg.png'):
+		pylab.figure(figure)
+		pylab.plot(episodes, scores, option)
+		pylab.savefig(filepath)
+
 	# 정책신경망을 업데이트 하기 위한 오류함수와 훈련함수의 생성
 	def build_optimizer(self):
-		action = K.placeholder(shape=[None, 5])
+		action = K.placeholder(shape=[None, self.action_size])
 		discounted_rewards = K.placeholder(shape=[None, ])
 
 		# 크로스 엔트로피 오류함수 계산
@@ -94,11 +105,11 @@ class ReinforceAgent:
 		self.optimizer([self.states, self.actions, discounted_rewards])
 		self.states, self.actions, self.rewards = [], [], []
 
-
+'''
 if __name__ == "__main__":
 	# 환경과 에이전트의 생성
 	env = Env()
-	agent = ReinforceAgent()
+	agent = PgAgent()
 
 	global_step = 0
 	scores, episodes = [], []
@@ -131,12 +142,12 @@ if __name__ == "__main__":
 				scores.append(score)
 				episodes.append(e)
 				score = round(score,2)
-				print("episode:", e, "  score:", score, "  time_step:",
-					  global_step)
+				print("episode:", e, "  score:", score, "  time_step:", global_step)
 
 		# 100 에피소드마다 학습 결과 출력 및 모델 저장
 		if e % 100 == 0:
 			pylab.plot(episodes, scores, 'b')
-			pylab.savefig("./save_graph/reinforce.png")
-			agent.model.save_weights("./save_model/reinforce.h5")
+			pylab.savefig("./save_graph/pg.png")
+			agent.model.save_weights("./save_model/pg.h5")
 			print("Model Saved ...")
+'''

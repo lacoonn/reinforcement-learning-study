@@ -7,13 +7,13 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.models import Sequential
 
-EPISODES = 1000
+EPISODES = 1000000
 
 
 # 그리드월드 예제에서의 딥살사 에이전트
 class SarsaAgent:
 	def __init__(self):
-		self.load_model = True
+		self.load_model = False
 		# 에이전트가 가능한 모든 행동 정의
 		self.action_space = [0, 1, 2, 3, 4]
 		# 상태의 크기와 행동의 크기 정의
@@ -49,12 +49,13 @@ class SarsaAgent:
 		else:
 			# 모델로부터 행동 산출
 			state = np.float32(state)
-			print(state.shape)
-			print(state)
 			q_values = self.model.predict(state)
-			print(q_values.shape)
-			print(q_values)
-			print()
+			if False:
+				print(state.shape)
+				print(state)
+				print(q_values.shape)
+				print(q_values)
+				print()
 			return np.argmax(q_values[0])
 
 	# SARSA 방식으로 모델 학습
@@ -106,8 +107,7 @@ if __name__ == "__main__":
 			next_state = np.reshape(next_state, [1, 15])
 			next_action = agent.get_action(next_state)
 			# 샘플로 모델 학습
-			agent.train_model(state, action, reward, next_state, next_action,
-							  done)
+			agent.train_model(state, action, reward, next_state, next_action, done)
 			state = next_state
 			score += reward
 
@@ -117,12 +117,12 @@ if __name__ == "__main__":
 				# 에피소드마다 학습 결과 출력
 				scores.append(score)
 				episodes.append(e)
-				pylab.plot(episodes, scores, 'b')
-				pylab.savefig("./save_graph/deep_sarsa_.png")
 				print("episode:", e, "  score:", score, "global_step",
 					  global_step, "  epsilon:", agent.epsilon)
 
 		# 100 에피소드마다 모델 저장
 		if e % 100 == 0:
+			pylab.plot(episodes, scores, 'b')
+			pylab.savefig("./save_graph/deep_sarsa.png")
 			agent.model.save_weights("./save_model/deep_sarsa.h5")
 			print("Model Saved ...")

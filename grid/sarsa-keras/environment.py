@@ -125,7 +125,6 @@ class Env(tk.Tk):
 
     def reset(self):
         self.update()
-        time.sleep(0.5)
         x, y = self.canvas.coords(self.rectangle)
         self.canvas.move(self.rectangle, UNIT / 2 - x, UNIT / 2 - y)
         self.reset_reward()
